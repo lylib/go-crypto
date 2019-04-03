@@ -1,20 +1,14 @@
-# 说明
-> 主要针对“AES和DES加密算法”的应用：
-- 加密模式："ECB", "CBC", "CTR", "OFB", "CFB"
-- 填充方式："PKCS5", "PKCS7", "ZERO"
-- 输出格式："BASE64", "HEX"
-
-# demo
-```golang
-package main
+package cryptoEx
 
 import (
 	"fmt"
+	"testing"
 
 	cryptoEx "github.com/lylib/go-crypto"
 )
 
-func main() {
+func TestH(t *testing.T) {
+	t.Log("GG")
 	c := cryptoEx.NewCrypto("OFB", "ZERO", "HEX")
 	e1, _ := c.EncryptAES("Online project hosting using Git. ", "1234567887654321", "8765432112345678")
 	fmt.Println(e1)
@@ -26,5 +20,3 @@ func main() {
 	d2, _ := c.DecryptDES(e2, "12345678", "87654321")
 	fmt.Println(d2)
 }
-
-```
