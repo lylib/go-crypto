@@ -15,16 +15,26 @@ import (
 )
 
 func main() {
-	c := cryptoEx.NewCrypto("OFB", "ZERO", "HEX")
-	e1, _ := c.EncryptAES("Online project hosting using Git. ", "1234567887654321", "8765432112345678")
+	content := []byte("Online project hosting using Git. ")
+
+	// AES
+	cAES := cryptoEx.NewCrypto(cryptoEx.StandardType.AES, cryptoEx.ModeType.ECB,
+		cryptoEx.PaddingType.PKCS5, cryptoEx.FormatType.HEX)
+	key1 := []byte("123456798765432a")    // 16 byte
+	vector1 := []byte("8765432112345678") // 16 byte
+	e1, _ := cAES.Encrypt(content, key1, vector1)
 	fmt.Println(e1)
-	d1, _ := c.DecryptAES(e1, "1234567887654321", "8765432112345678")
+	d1, _ := cAES.Decrypt([]byte(e1), key1, vector1)
 	fmt.Println(d1)
 
-	e2, _ := c.EncryptDES("Online project hosting using Git. ", "12345678", "87654321")
+	// DES
+	cDES := cryptoEx.NewCrypto(cryptoEx.StandardType.DES, cryptoEx.ModeType.ECB,
+		cryptoEx.PaddingType.ZERO, cryptoEx.FormatType.BASE64)
+	key2 := []byte("123456bA")    // 8 byte
+	vector2 := []byte("87654321") // 8 byte
+	e2, _ := cDES.Encrypt(content, key2, vector2)
 	fmt.Println(e2)
-	d2, _ := c.DecryptDES(e2, "12345678", "87654321")
+	d2, _ := cDES.Decrypt([]byte(e2), key2, vector2)
 	fmt.Println(d2)
 }
-
 ```
