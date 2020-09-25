@@ -1,90 +1,96 @@
 package cryptoEx
 
 import (
-	"crypto/cipher"
+	"crypto/aes"
+	"crypto/des"
 )
 
-type (
-	standardType uint8
-	modeType     uint8
-	paddingType  uint8
-	formatType   uint8
-)
-
-var (
-	StandardType = struct {
-		AES standardType
-		DES standardType
-	}{
-		AES: 1,
-		DES: 2,
-	}
-	ModeType = struct {
-		ECB modeType
-		CBC modeType
-		CTR modeType
-		OFB modeType
-		CFB modeType
-	}{
-		ECB: 1,
-		CBC: 2,
-		CTR: 3,
-		OFB: 4,
-		CFB: 5,
-	}
-	PaddingType = struct {
-		PKCS5 paddingType
-		ZERO  paddingType
-	}{
-		PKCS5: 1,
-		ZERO:  2,
-	}
-	FormatType = struct {
-		BASE64 formatType
-		HEX    formatType
-	}{
-		BASE64: 1,
-		HEX:    2,
-	}
-)
-
-type Crypto interface {
-	Encrypt(src, key, vector []byte) (string, error)
-	Decrypt(src, key, vector []byte) (string, error)
+type aesCrypto struct {
+	*CryptoData
 }
 
-type cryptoMode interface {
-	Encrypt(block cipher.Block, data, key, vector []byte) ([]byte, error)
-	Decrypt(block cipher.Block, data, key, vector []byte) ([]byte, error)
+type desCrypto struct {
+	*CryptoData
 }
 
-type cryptoPadding interface {
-	Padding(ciphertext []byte, blockSize int) []byte
-	UnPadding(origData []byte) []byte
+func NewAESCrypto(data *CryptoData) Crypto {
+	return &aesCrypto{data}
 }
 
-type cryptoFormat interface {
-	Encode(ciphertext []byte) string
-	Decode(ciphertext string) ([]byte, error)
+func NewDESCrypto(data *CryptoData) Crypto {
+	return &desCrypto{data}
 }
 
-func NewCrypto(s standardType, m modeType, p paddingType, f formatType) (cryptoer Crypto) {
-	mode := getMode(m)
-	padding := getPadding(p)
-	format := getFormat(f)
-	switch s {
-	case StandardType.AES:
-		cryptoer = &cryptoerByAES{
-			mode:    mode,
-			padding: padding,
-			format:  format,
-		}
-	case StandardType.DES:
-		cryptoer = &cryptoerByDES{
-			mode:    mode,
-			padding: padding,
-			format:  format,
-		}
+func (this *aesCrypto) Encrypt(src, key, vector []byte) (string, error) {
+	// standard
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
 	}
-	return
+	// padding
+	src = this.Padding.Padding(src, block.BlockSize())
+	// mode
+	ciphertext, err := this.Mode.Encrypt(block, src, key, vector)
+	if err != nil {
+		return "", err
+	}
+	// format
+	return this.Format.Encode(ciphertext), nil
+}
+
+func (this *aesCrypto) Decrypt(src, key, vector []byte) (string, error) {
+	// format
+	data, err := this.Format.Decode(string(src))
+	if err != nil {
+		return "", err
+	}
+	// standard
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	// mode
+	plaintext, err := this.Mode.Decrypt(block, data, key, vector)
+	if err != nil {
+		return "", err
+	}
+	// padding
+	return string(this.Padding.UnPadding(plaintext)), nil
+}
+
+func (this *desCrypto) Encrypt(src, key, vector []byte) (string, error) {
+	// standard
+	block, err := des.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	// padding
+	src = this.Padding.Padding(src, block.BlockSize())
+	// mode
+	ciphertext, err := this.Mode.Encrypt(block, src, key, vector)
+	if err != nil {
+		return "", err
+	}
+	// format
+	return this.Format.Encode(ciphertext), nil
+}
+
+func (this *desCrypto) Decrypt(src, key, vector []byte) (string, error) {
+	// format
+	data, err := this.Format.Decode(string(src))
+	if err != nil {
+		return "", err
+	}
+	// standard
+	block, err := des.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	// mode
+	plaintext, err := this.Mode.Decrypt(block, data, key, vector)
+	if err != nil {
+		return "", err
+	}
+	// padding
+	return string(this.Padding.UnPadding(plaintext)), nil
 }

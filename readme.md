@@ -15,26 +15,43 @@ import (
 )
 
 func main() {
+	AES_Demo()
+	DES_Demo()
+}
+
+func AES_Demo() {
 	content := []byte("Online project hosting using Git. ")
 
-	// AES
-	cAES := cryptoEx.NewCrypto(cryptoEx.StandardType.AES, cryptoEx.ModeType.ECB,
-		cryptoEx.PaddingType.PKCS5, cryptoEx.FormatType.HEX)
-	key1 := []byte("123456798765432a")    // 16 byte
-	vector1 := []byte("8765432112345678") // 16 byte
-	e1, _ := cAES.Encrypt(content, key1, vector1)
-	fmt.Println(e1)
-	d1, _ := cAES.Decrypt([]byte(e1), key1, vector1)
-	fmt.Println(d1)
+	key := []byte("X7WBOELqgn6dc8CN")    // 16 byte
+	vector := []byte("7vcUPpqeblkHO0Qx") // 16 byte
 
-	// DES
-	cDES := cryptoEx.NewCrypto(cryptoEx.StandardType.DES, cryptoEx.ModeType.ECB,
-		cryptoEx.PaddingType.ZERO, cryptoEx.FormatType.BASE64)
-	key2 := []byte("123456bA")    // 8 byte
-	vector2 := []byte("87654321") // 8 byte
-	e2, _ := cDES.Encrypt(content, key2, vector2)
-	fmt.Println(e2)
-	d2, _ := cDES.Decrypt([]byte(e2), key2, vector2)
-	fmt.Println(d2)
+	fmt.Println("AES加密|解密：")
+	aes := cryptoEx.NewAESCrypto(&cryptoEx.CryptoData{
+		Mode:    &cryptoEx.ECBMode{},
+		Padding: &cryptoEx.PKCS5Padding{},
+		Format:  &cryptoEx.HexFormat{},
+	})
+	encryptStr, _ := aes.Encrypt(content, key, vector)
+	decryptStr, _ := aes.Decrypt([]byte(encryptStr), key, vector)
+	fmt.Println(encryptStr)
+	fmt.Println(decryptStr)
 }
+
+func DES_Demo() {
+	content := []byte("Online project hosting using Git. ")
+
+	key := []byte("Lyp5NVOq")    // 8 byte
+	vector := []byte("oW7nlMbS") // 8 byte
+
+	des := cryptoEx.NewDESCrypto(&cryptoEx.CryptoData{
+		Mode:    &cryptoEx.OFBMode{},
+		Padding: &cryptoEx.ZeroPadding{},
+		Format:  &cryptoEx.Base64Format{},
+	})
+	encryptStr, _ := des.Encrypt(content, key, vector)
+	decryptStr, _ := des.Decrypt([]byte(encryptStr), key, vector)
+	fmt.Println(encryptStr)
+	fmt.Println(decryptStr)
+}
+
 ```

@@ -6,32 +6,22 @@ import (
 	"fmt"
 )
 
-type formatByBASE64 struct {
+type Base64Format struct {
 }
 
-type formatByHEX struct {
+type HexFormat struct {
 }
 
-func (this *formatByBASE64) Encode(ciphertext []byte) string {
+func (this *Base64Format) Encode(ciphertext []byte) string {
 	return base64.StdEncoding.EncodeToString(ciphertext)
 }
-func (this *formatByBASE64) Decode(ciphertext string) ([]byte, error) {
+func (this *Base64Format) Decode(ciphertext string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(ciphertext)
 }
 
-func (this *formatByHEX) Encode(ciphertext []byte) string {
+func (this *HexFormat) Encode(ciphertext []byte) string {
 	return fmt.Sprintf("%X", ciphertext)
 }
-func (this *formatByHEX) Decode(ciphertext string) ([]byte, error) {
+func (this *HexFormat) Decode(ciphertext string) ([]byte, error) {
 	return hex.DecodeString(ciphertext)
-}
-
-func getFormat(f formatType) (format cryptoFormat) {
-	switch f {
-	case FormatType.BASE64:
-		format = &formatByBASE64{}
-	case FormatType.HEX:
-		format = &formatByHEX{}
-	}
-	return
 }
