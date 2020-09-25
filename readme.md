@@ -20,12 +20,12 @@ func main() {
 }
 
 func AES_Demo() {
+	fmt.Println("AES Demo")
 	content := []byte("Online project hosting using Git. ")
 
 	key := []byte("X7WBOELqgn6dc8CN")    // 16 byte
 	vector := []byte("7vcUPpqeblkHO0Qx") // 16 byte
 
-	fmt.Println("AES加密|解密：")
 	aes := cryptoEx.NewAESCrypto(&cryptoEx.CryptoData{
 		Mode:    &cryptoEx.ECBMode{},
 		Padding: &cryptoEx.PKCS5Padding{},
@@ -38,6 +38,7 @@ func AES_Demo() {
 }
 
 func DES_Demo() {
+	fmt.Println("DES_Demo")
 	content := []byte("Online project hosting using Git. ")
 
 	key := []byte("Lyp5NVOq")    // 8 byte
